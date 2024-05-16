@@ -1,37 +1,48 @@
+//Abrimos la conexion al servidor io
 const socketClient = io();
 
-socketClient.on('saludodesdeback',(message)=>{
-    console.log(message);
-    socketClient.emit('respuestadesdefront', 'Muchas gracias')
+
+const formDom = document.getElementById('createProductForm');
+
+formDom.addEventListener('submit', (evento) => {
+    
+    evento.preventDefault();
+    const title = document.getElementById('title').value;
+    const category = document.getElementById('category').value;
+    const description = document.getElementById('description').value;
+    const price = document.getElementById('price').value;
+    const code = document.getElementById('code').value;
+    const stock = document.getElementById('stock').value;
+    const product = {
+        title, 
+        category,
+        description,
+        price,
+        code,
+        stock,
+        };
+    socketClient.emit('addProduct', product); 
 })
 
-const form = document.getElementById('form')
-const nameInput = document.getElementById('name')
-const priceInput = document.getElementById('price')
-const products = document.getElementById('products')
+socketClient.on('getProducts', products => {
+    const newProduc = document.getElementById('products')
+    newProduc.innerHTML = '';
 
-form.onsubmit = (e) =>{
-    e.preventDefault();
-    const name = nameInput.value;
-    const price = priceInput.value;
-    const products = {
-        name,
-        price
-    };
-    socketClient.emit('newproduct', products);
-}
-
-
-socketClient.on('products',(arrayProducts)=>{
-    let infoProducts =  '' ;
-    arrayProducts.map((prod)=>{
-        infoProducts += `${prod.name} - $ ${prod.price}`
+    products.forEach(product => {
+        newProduc.innerHTML +=
+        `
+        <div>
+        <h5>Producto: ${product.title}</h5>
+        <p>Categoría: ${product.category}</p>
+        <p>Descripción: ${product.description}</p>
+        <p>Precio: $${product.price}</p>
+        <p>Código: ${product.code}</p>
+        <p>Stock: ${product.stock}</p>
+        <p>${product.thumbnail}</p>
+        </div>
+        `
     })
-    products.innerHTML = infoProducts ;
-
 })
 
 
-socketClient.on('message',(message)=>{
-    console.log(message);
-})
+
