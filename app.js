@@ -65,3 +65,4 @@ socketServer.on('connection', async (socket)=>{
     
 })
 
+// clonando el repositorio en una nueva maquina
